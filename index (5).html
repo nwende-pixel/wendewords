@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wende Words</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6B2B;
+    --blue: #1B4F8A;
+    --blue-light: #2D7DD2;
+    --gold: #FFD700;
+    --gold-dark: #FFA500;
+    --green: #4CAF50;
+    --red: #E53935;
+    --bg: #FFF8F0;
+    --shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; overflow: hidden; }
+
+  .bg-sky {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: linear-gradient(180deg, #C9E8FF 0%, #FFF8F0 70%);
+    overflow: hidden;
+  }
+  .cloud {
+    position: absolute; background: white; border-radius: 50px; opacity: 0.8;
+    animation: floatCloud linear infinite;
+  }
+  .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
+  .cloud:nth-child(1) { width:120px;height:40px;top:8%;animation-duration:40s;animation-delay:-5s; }
+  .cloud:nth-child(1)::before { width:60px;height:60px;top:-30px;left:15px; }
+  .cloud:nth-child(1)::after { width:40px;height:40px;top:-20px;left:50px; }
+  .cloud:nth-child(2) { width:80px;height:28px;top:18%;animation-duration:55s;animation-delay:-25s;opacity:0.5; }
+  .cloud:nth-child(2)::before { width:40px;height:40px;top:-20px;left:10px; }
+  .cloud:nth-child(2)::after { width:30px;height:30px;top:-15px;left:35px; }
+  .cloud:nth-child(3) { width:150px;height:45px;top:4%;animation-duration:65s;animation-delay:-40s; }
+  .cloud:nth-child(3)::before { width:70px;height:70px;top:-35px;left:20px; }
+  .cloud:nth-child(3)::after { width:50px;height:50px;top:-25px;left:70px; }
+  @keyframes floatCloud { from{transform:translateX(-200px)}to{transform:translateX(110vw)} }
+
+  .screen { position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;transition:opacity 0.4s,transform 0.4s; }
+  .screen.hidden { opacity:0;pointer-events:none;transform:scale(0.97);display:none!important; }
+  .hidden { display:none!important; }
+
+  /* NAME SCREEN */
+  #nameScreen { gap:20px; }
+  .logo-img { width:180px;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.18));animation:bounceLogo 2s ease-in-out infinite; }
+  @keyframes bounceLogo { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
+  .tagline { font-family:'Fredoka One';color:var(--blue);font-size:1.05rem;letter-spacing:1px; }
+  .name-card { background:white;border-radius:24px;padding:28px 36px;box-shadow:var(--shadow);text-align:center;max-width:380px;width:100%; }
+  .name-card h2 { font-family:'Fredoka One';color:var(--blue);font-size:1.5rem;margin-bottom:6px; }
+  .name-card p { color:#888;font-size:0.9rem;margin-bottom:18px;direction:rtl; }
+  .name-input { width:100%;padding:13px 18px;border:3px solid #E0E0E0;border-radius:14px;font-family:'Nunito';font-size:1.1rem;font-weight:700;text-align:center;color:#333;outline:none;transition:border-color 0.2s;direction:ltr; }
+  .name-input:focus { border-color:var(--orange); }
+  .btn-start { width:100%;padding:15px;background:linear-gradient(135deg,var(--orange),#FF8C42);color:white;border:none;border-radius:14px;font-family:'Fredoka One';font-size:1.25rem;cursor:pointer;margin-top:14px;box-shadow:0 4px 15px rgba(255,107,43,0.4);transition:transform 0.15s; }
+  .btn-start:hover { transform:translateY(-2px); }
+
+  /* ============================================================
+     OPENING SCREEN (NEW - before intro comic)
+     ============================================================ */
+  #openingScreen {
+    background: linear-gradient(180deg, #1B4F8A 0%, #2D7DD2 60%, #87CEEB 100%);
+    gap: 0;
+    padding: 0;
+    justify-content: stretch;
+  }
+  .opening-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 24px 20px 20px;
+    gap: 18px;
+  }
+  .opening-title {
+    font-family: 'Fredoka One';
+    color: white;
+    font-size: 1.8rem;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    line-height: 1.2;
+  }
+  .opening-title span { color: var(--gold); }
+
+  /* Image area */
+  .opening-image-wrap {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    background: rgba(255,255,255,0.15);
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .opening-image-wrap img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 240px;
+    object-fit: cover;
+  }
+  .opening-image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 30px 20px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+  }
+  .opening-image-placeholder .icon { font-size: 3rem; }
+
+  /* Audio player */
+  .opening-audio-wrap {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 18px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .audio-play-btn {
+    width: 52px; height: 52px;
+    background: var(--gold);
+    border: none; border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+    transition: transform 0.15s, background 0.2s;
+  }
+  .audio-play-btn:hover { transform: scale(1.08); }
+  .audio-play-btn.playing { background: #FF6B2B; }
+  .audio-info { flex: 1; }
+  .audio-info .audio-label { font-family: 'Fredoka One'; color: white; font-size: 1rem; }
+  .audio-info .audio-sub { color: rgba(255,255,255,0.7); font-size: 0.78rem; font-weight: 700; direction: rtl; }
+  .audio-progress-wrap { width: 100%; height: 5px; background: rgba(255,255,255,0.25); border-radius: 10px; margin-top: 6px; }
+  .audio-progress-fill { height: 100%; background: var(--gold); border-radius: 10px; width: 0%; transition: width 0.3s; }
+
+  /* No audio placeholder */
+  .audio-placeholder {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255,255,255,0.1);
+    border: 2px dashed rgba(255,255,255,0.3);
+    border-radius: 18px;
+    padding: 14px 18px;
+    text-align: center;
+    color: rgba(255,255,255,0.55);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .btn-continue {
+    padding: 15px 40px;
+    background: var(--gold);
+    color: var(--blue);
+    border: none; border-radius: 20px;
+    font-family: 'Fredoka One'; font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    transition: transform 0.15s;
+    animation: bounceLogo 2s ease-in-out infinite;
+  }
+  .btn-continue:hover { transform: scale(1.05); animation: none; }
+
+  /* INTRO SCREEN */
+  #introScreen { padding:0; }
+  .comic-scene { position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#87CEEB 0%,#C5E8FF 50%,#7EC850 50%,#5BA832 100%); }
+  .comic-ground { position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(180deg,#7EC850,#4a9020); }
+  .comic-sun { position:absolute;top:30px;right:40px;width:70px;height:70px;background:#FFD700;border-radius:50%;box-shadow:0 0 0 12px rgba(255,215,0,0.3);animation:rotateSun 10s linear infinite; }
+  @keyframes rotateSun { from{transform:rotate(0)}to{transform:rotate(360deg)} }
+
+  .char-panda { position:absolute;bottom:34%;left:8%;font-size:100px;animation:slideInLeft 0.8s ease-out 0.3s both; }
+  .char-roo { position:absolute;bottom:32%;right:8%;animation:slideInRight 0.8s ease-out 0.5s both; }
+  .char-roo img { width:130px;filter:drop-shadow(2px 4px 8px rgba(0,0,0,0.2)); }
+  @keyframes slideInLeft { from{transform:translateX(-200px);opacity:0}to{transform:translateX(0);opacity:1} }
+  @keyframes slideInRight { from{transform:translateX(200px);opacity:0}to{transform:translateX(0);opacity:1} }
+
+  .speech-bubble {
+    position:absolute;background:white;border-radius:18px;padding:10px 14px;
+    box-shadow:0 3px 12px rgba(0,0,0,0.15);max-width:200px;opacity:0;
+    transition:opacity 0.4s,transform 0.4s;transform:scale(0.8);
+    pointer-events:none;
+  }
+  .speech-bubble.show { opacity:1;transform:scale(1); }
+  .speech-bubble .en { font-weight:800;font-size:0.85rem;color:#333;margin-bottom:3px; }
+  .speech-bubble .he { font-size:0.72rem;color:#888;direction:rtl; }
+  .speech-bubble::after { content:'';position:absolute;border:10px solid transparent; }
+
+  .bubble-panda { left:calc(8% + 110px);bottom:calc(34% + 100px); }
+  .bubble-panda::after { left:20px;bottom:-18px;border-top-color:white;border-bottom:0; }
+  .bubble-roo { right:calc(8% + 140px);bottom:calc(32% + 120px);text-align:right; }
+  .bubble-roo::after { right:20px;bottom:-18px;border-top-color:white;border-bottom:0; }
+
+  .parts-preview { position:absolute;bottom:4%;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.95);border-radius:16px;padding:10px 18px;font-family:'Fredoka One';font-size:0.85rem;color:var(--blue);text-align:center;box-shadow:var(--shadow);opacity:0;transition:opacity 0.4s;max-width:90vw; }
+  .parts-preview.show { opacity:1; }
+
+  .intro-skip { position:absolute;bottom:16px;right:16px;background:rgba(255,255,255,0.8);border:none;border-radius:20px;padding:7px 16px;font-family:'Nunito';font-weight:700;font-size:0.85rem;cursor:pointer;color:#666; }
+
+  /* TOP BAR */
+  .top-bar { width:100%;padding:10px 18px;background:var(--blue);display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,0.2);z-index:10;position:relative; }
+  .top-bar-logo { font-family:'Fredoka One';color:white;font-size:1.2rem; }
+  .top-bar-sub { color:rgba(255,255,255,0.7);font-size:0.78rem;font-weight:700; }
+  .shop-btn { background:var(--gold);color:var(--blue);border:none;border-radius:20px;padding:8px 16px;font-family:'Fredoka One';font-size:0.95rem;cursor:pointer;transition:transform 0.15s;display:flex;align-items:center;gap:5px; }
+  .shop-btn:hover { transform:scale(1.05); }
+  .back-btn { background:rgba(255,255,255,0.2);color:white;border:2px solid rgba(255,255,255,0.4);border-radius:20px;padding:7px 14px;font-family:'Nunito';font-weight:700;font-size:0.88rem;cursor:pointer;transition:background 0.15s; }
+  .back-btn:hover { background:rgba(255,255,255,0.3); }
+
+  /* GAME SCREEN */
+  #gameScreen { justify-content:flex-start;padding:0;gap:0; }
+  .game-area { flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 18px 0;gap:12px;overflow-y:auto; }
+
+  .progress-wrap { width:100%;max-width:480px;background:#E8E8E8;border-radius:20px;height:8px;overflow:hidden; }
+  .progress-fill { height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:20px;transition:width 0.5s ease; }
+  .progress-label { display:flex;justify-content:space-between;font-size:0.75rem;color:#999;font-weight:700;width:100%;max-width:480px;margin-top:3px; }
+
+  .question-card { background:white;border-radius:22px;padding:24px 20px;box-shadow:var(--shadow);width:100%;max-width:480px;text-align:center; }
+  .q-type-badge { display:inline-block;border-radius:20px;padding:4px 14px;font-size:0.75rem;font-weight:800;margin-bottom:14px;letter-spacing:0.5px;color:white; }
+  .q-word { font-family:'Fredoka One';font-size:1.9rem;color:var(--blue);margin-bottom:4px;line-height:1.2; }
+  .q-sentence { font-size:1rem;font-weight:700;color:#333;line-height:1.7;margin-bottom:4px;direction:ltr; }
+  .q-blank { display:inline-block;border-bottom:3px solid var(--orange);min-width:80px;height:26px;vertical-align:bottom; }
+  .q-tries { font-size:0.82rem;color:#bbb;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px; }
+
+  .answers-grid { display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%;max-width:480px; }
+  .ans-btn { background:white;border:3px solid #EBEBEB;border-radius:14px;padding:13px 8px;font-family:'Nunito';font-weight:700;font-size:0.9rem;cursor:pointer;color:#333;transition:all 0.15s;text-align:center;line-height:1.3; }
+  .ans-btn:hover:not(:disabled) { border-color:var(--blue-light,#2D7DD2);background:#F0F7FF;transform:translateY(-2px); }
+  .ans-btn.correct { background:#E8F5E9;border-color:var(--green);color:var(--green); }
+  .ans-btn.wrong { background:#FFEBEE;border-color:var(--red);color:var(--red); }
+  .ans-btn.reveal { background:#E8F5E9;border-color:var(--green);color:var(--green);animation:pulse 0.4s ease; }
+  .ans-btn:disabled { cursor:default; }
+  @keyframes pulse { 0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)} }
+
+  .feedback-msg { font-family:'Fredoka One';font-size:1.2rem;text-align:center;min-height:30px;transition:opacity 0.3s; }
+  .feedback-msg.correct { color:var(--green); }
+  .feedback-msg.wrong { color:var(--red); }
+  .feedback-msg.neutral { color:#999; }
+
+  /* BOTTOM BAR */
+  .bottom-bar { width:100%;background:var(--blue);padding:12px 14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 -2px 10px rgba(0,0,0,0.15);min-height:78px; }
+  .coins-display { display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border-radius:20px;padding:7px 14px;flex-shrink:0; }
+  .coins-display .coin-num { font-family:'Fredoka One';color:var(--gold);font-size:1.35rem; }
+  .coin-icon { font-size:1.4rem; }
+  .parts-bar { flex:1;display:flex;align-items:center;gap:8px;overflow-x:auto;padding:2px 0;scrollbar-width:none; }
+  .parts-bar::-webkit-scrollbar { display:none; }
+  .part-item { display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;opacity:0.35;transition:opacity 0.3s,transform 0.3s; }
+  .part-item.owned { opacity:1; }
+  .part-item.just-bought { animation:popIn 0.5s ease; }
+  @keyframes popIn { 0%{transform:scale(0.5)}70%{transform:scale(1.2)}100%{transform:scale(1)} }
+  .part-item .part-emoji { font-size:1.7rem;filter:grayscale(1);transition:filter 0.3s; }
+  .part-item.owned .part-emoji { filter:none; }
+  .part-item .part-name { font-size:0.6rem;color:rgba(255,255,255,0.65);font-weight:700;text-align:center;max-width:44px;line-height:1.1; }
+  .part-item.owned .part-name { color:var(--gold); }
+
+  /* SHOP */
+  #shopScreen { justify-content:flex-start;padding:0; }
+  .shop-area { flex:1;width:100%;display:flex;flex-direction:column;align-items:center;padding:14px 18px 0;gap:10px;overflow-y:auto; }
+  .shop-title { font-family:'Fredoka One';color:var(--blue);font-size:1.4rem;text-align:center; }
+  .shop-subtitle { color:#999;font-size:0.85rem;text-align:center;margin-top:-6px; }
+  .shop-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:480px;padding-bottom:14px; }
+  .shop-item { background:white;border-radius:16px;padding:14px 10px;box-shadow:0 2px 10px rgba(0,0,0,0.07);text-align:center;border:2px solid transparent;transition:border-color 0.2s; }
+  .shop-item.owned { border-color:var(--green);background:#F0FBF0; }
+  .shop-item .item-emoji { font-size:2rem;margin-bottom:4px; }
+  .shop-item .item-en { font-family:'Fredoka One';color:var(--blue);font-size:0.95rem; }
+  .shop-item .item-he { color:#999;font-size:0.75rem;margin-bottom:6px;direction:rtl; }
+  .shop-item .item-price { display:flex;align-items:center;justify-content:center;gap:4px;font-family:'Fredoka One';font-size:0.95rem;color:var(--gold-dark);margin-bottom:7px; }
+  .buy-btn { width:100%;padding:7px;background:linear-gradient(135deg,var(--orange),#FF8C42);color:white;border:none;border-radius:10px;font-family:'Fredoka One';font-size:0.85rem;cursor:pointer;transition:transform 0.15s,opacity 0.2s; }
+  .buy-btn:hover:not(:disabled) { transform:scale(1.03); }
+  .buy-btn:disabled { opacity:0.45;cursor:default; }
+  .owned-badge { background:var(--green);color:white;border-radius:10px;padding:7px;font-family:'Fredoka One';font-size:0.85rem;width:100%; }
+
+  /* ============================================================
+     OUTRO SCREEN (updated to support video)
+     ============================================================ */
+  #outroScreen { overflow:hidden;padding:0; }
+  .outro-scene { position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;overflow:hidden; }
+
+  /* Video outro (shown when video is set) */
+  .outro-video-wrap {
+    position: absolute; inset: 0;
+    background: #000;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 0;
+  }
+  .outro-video-wrap video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  /* Overlay on top of video */
+  .outro-video-overlay {
+    position: absolute; inset: 0;
+    z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end;
+    padding-bottom: 30px;
+    background: linear-gradient(transparent 40%, rgba(0,0,0,0.6) 100%);
+  }
+  .outro-video-overlay .play-again-btn {
+    margin-top: 14px;
+  }
+  .outro-video-overlay .outro-coins {
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  /* Classic outro (no video) */
+  .outro-classic { width:100%;height:100%;background:linear-gradient(180deg,#87CEEB,#C5E8FF);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;position:relative; }
+  .outro-plane { position:absolute;font-size:80px;top:30%;animation:planeFly 4s ease-in-out 0.5s both; }
+  @keyframes planeFly { from{left:-150px;transform:rotate(-8deg)}to{left:110%;transform:rotate(-8deg)} }
+  .outro-text { text-align:center;animation:fadeUp 0.8s ease-out 1s both;position:relative;z-index:2; }
+  .outro-text h1 { font-family:'Fredoka One';font-size:2.2rem;color:var(--blue);margin-bottom:6px; }
+  .outro-text p { font-size:1rem;color:var(--blue);font-weight:700; }
+  .outro-coins { font-family:'Fredoka One';font-size:1.6rem;color:var(--gold-dark);animation:fadeUp 0.8s ease-out 1.5s both;display:flex;align-items:center;gap:8px; }
+  .play-again-btn { padding:14px 36px;background:var(--orange);color:white;border:none;border-radius:20px;font-family:'Fredoka One';font-size:1.2rem;cursor:pointer;box-shadow:0 4px 15px rgba(255,107,43,0.4);animation:fadeUp 0.8s ease-out 2s both;transition:transform 0.15s; }
+  .play-again-btn:hover { transform:scale(1.05); }
+  @keyframes fadeUp { from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1} }
+  .confetti-piece { position:absolute;border-radius:2px;animation:confettiFall linear both; }
+  @keyframes confettiFall { from{transform:translateY(-20px) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0} }
+
+  /* COIN POPUP */
+  .coin-popup { position:fixed;pointer-events:none;font-family:'Fredoka One';font-size:1.3rem;color:var(--gold-dark);z-index:100;animation:coinFloat 1.2s ease-out forwards; }
+  @keyframes coinFloat { from{transform:translateY(0);opacity:1}to{transform:translateY(-80px);opacity:0} }
+</style>
+</head>
+<body>
+<div class="bg-sky"><div class="cloud"></div><div class="cloud"></div><div class="cloud"></div></div>
+
+<!-- NAME SCREEN -->
+<div class="screen" id="nameScreen">
+  <img class="logo-img" src="logo.jpg" onerror="this.style.display='none'" alt="Wende Words">
+  <div class="tagline">Learn English, Build the World!</div>
+  <div class="name-card">
+    <h2>What's your kangaroo's name?</h2>
+    <p>מה השם של הקנגורו שלך?</p>
+    <input class="name-input" id="rooName" type="text" placeholder="Enter a name..." maxlength="15" dir="ltr">
+    <button class="btn-start" onclick="startOpening()">Let's Go! 🦘</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     OPENING SCREEN (NEW)
+     Shows the kids' photo + audio recording before the comic
+     ============================================================ -->
+<div class="screen hidden" id="openingScreen">
+  <div class="opening-inner">
+    <div class="opening-title">🌍 <span>Wende Words</span> 🦘<br>Learn English, Build the World!</div>
+
+    <!-- ═══════════════════════════════════════════════════
+         KIDS PHOTO
+         Replace the src below with your actual image URL
+         e.g. src="images/kids.jpg"   or a base64 string
+         ═══════════════════════════════════════════════════ -->
+    <div class="opening-image-wrap">
+      <!-- KIDS_IMAGE_HERE: replace the div below with an <img> tag -->
+      <div class="opening-image-placeholder" id="kidsImagePlaceholder">
+        <div class="icon">📸</div>
+        <div>תמונת הילדים תופיע כאן<br><small style="opacity:0.7">החלף את ה-placeholder בתמונה שלך</small></div>
+      </div>
+      <!-- Example when you have the image:
+      <img src="images/kids-recording.jpg" alt="Kids recording">
+      -->
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         KIDS AUDIO
+         Set KIDS_AUDIO_SRC to your audio file URL
+         e.g. "audio/kids-intro.mp3"  or a GitHub raw URL
+         ═══════════════════════════════════════════════════ -->
+    <div class="opening-audio-wrap" id="audioPlayerWrap">
+      <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()">▶️</button>
+      <div class="audio-info">
+        <div class="audio-label">🎙️ From the kids!</div>
+        <div class="audio-sub">הקלטת הילדים</div>
+        <div class="audio-progress-wrap">
+          <div class="audio-progress-fill" id="audioProgressFill"></div>
+        </div>
+      </div>
+    </div>
+    <!-- This placeholder shows when no audio is configured -->
+    <div class="audio-placeholder hidden" id="audioPlaceholder">
+      🎙️ ההקלטה תופיע כאן<br>
+      <small>Set KIDS_AUDIO_SRC in the script</small>
+    </div>
+
+    <div id="openingCountdown" style="font-family:'Fredoka One';color:rgba(255,255,255,0.7);font-size:0.9rem;min-height:24px;text-align:center;"></div>
+  </div>
+</div>
+
+<!-- INTRO SCREEN -->
+<div class="screen hidden" id="introScreen">
+  <div class="comic-scene">
+    <div class="comic-sun"></div>
+    <div class="comic-ground"></div>
+    <div class="char-panda">🐼</div>
+    <div class="char-roo"><img src="wende.jpg" onerror="this.style.display='none'" alt="Wende"></div>
+
+    <div class="speech-bubble bubble-panda" id="bubble1">
+      <div class="en" id="bubble1en">Hey! Are you okay?</div>
+      <div class="he">היי! הכל בסדר?</div>
+    </div>
+    <div class="speech-bubble bubble-roo" id="bubble2">
+      <div class="en">Hi! I'm <span id="rooNameSpan">Wende</span>! What's up?</div>
+      <div class="he">שלום! מה קורה?</div>
+    </div>
+    <div class="speech-bubble bubble-panda" id="bubble3">
+      <div class="en">I need to get home to China… can you build me an airplane? ✈️</div>
+      <div class="he">אני צריך לחזור לסין... תוכל לבנות לי מטוס?</div>
+    </div>
+    <div class="speech-bubble bubble-roo" id="bubble4">
+      <div class="en">Of course! But first, let's learn some words! 💪</div>
+      <div class="he">כמובן! אבל קודם, בואו נלמד מילים!</div>
+    </div>
+
+    <div class="parts-preview" id="partsPreview">
+      ✈️ To build the airplane I'll need:<br>
+      Wings · Engines · Body · Tail · Propeller · Cockpit · Wheels
+    </div>
+    <button class="intro-skip" onclick="goToGame()">Skip ›</button>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div class="screen hidden" id="gameScreen">
+  <div class="top-bar">
+    <div>
+      <div class="top-bar-logo">🦘 Wende Words</div>
+      <div class="top-bar-sub">Chapter A – The Airplane ✈️</div>
+    </div>
+    <button class="shop-btn" onclick="goToShop()">🛒 Shop</button>
+  </div>
+  <div class="game-area" id="gameArea">
+    <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-label">
+      <span id="progressCount">0 / 70</span>
+      <span id="progressLabel">Question 1</span>
+    </div>
+    <div class="question-card" id="questionCard">
+      <div class="q-type-badge" id="qTypeBadge">English → Hebrew</div>
+      <div class="q-word" id="qWord">amazing</div>
+      <div class="q-sentence hidden" id="qSentence"></div>
+      <div class="q-tries" id="qTries"><span>❤️</span><span>❤️</span></div>
+    </div>
+    <div class="answers-grid" id="answersGrid"></div>
+    <div class="feedback-msg" id="feedbackMsg"></div>
+  </div>
+  <div class="bottom-bar">
+    <div class="coins-display"><span class="coin-icon">🪙</span><span class="coin-num" id="coinCount">0</span></div>
+    <div class="parts-bar" id="partsBar"></div>
+  </div>
+</div>
+
+<!-- SHOP SCREEN -->
+<div class="screen hidden" id="shopScreen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goToGame()">‹ Back</button>
+    <div class="top-bar-logo">🛒 Shop</div>
+    <div class="coins-display"><span class="coin-icon">🪙</span><span class="coin-num" id="shopCoinCount">0</span></div>
+  </div>
+  <div class="shop-area">
+    <div class="shop-title">Build the Airplane! ✈️</div>
+    <div class="shop-subtitle">Buy parts to complete the mission</div>
+    <div class="shop-grid" id="shopGrid"></div>
+  </div>
+  <div class="bottom-bar">
+    <div class="coins-display"><span class="coin-icon">🪙</span><span class="coin-num" id="shopBottomCoin">0</span></div>
+    <div class="parts-bar" id="shopPartsBar"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     OUTRO SCREEN (updated – supports video)
+     ============================================================ -->
+<div class="screen hidden" id="outroScreen">
+  <div class="outro-scene" id="outroScene">
+
+    <!-- VIDEO OUTRO – shown when OUTRO_VIDEO_SRC is set -->
+    <div class="outro-video-wrap hidden" id="outroVideoWrap">
+      <video id="outroVideo" playsinline autoplay>
+        <!-- src set dynamically -->
+      </video>
+      <div class="outro-video-overlay">
+        <div class="outro-coins" id="outroCoinsVideo" style="font-family:'Fredoka One';font-size:1.6rem;display:flex;align-items:center;gap:8px;">🪙 0 coins!</div>
+        <button class="play-again-btn" onclick="restartGame()">Play Again 🦘</button>
+      </div>
+    </div>
+
+    <!-- CLASSIC OUTRO – shown when no video -->
+    <div class="outro-classic" id="outroClassic">
+      <div class="outro-plane">✈️</div>
+      <div class="outro-text">
+        <h1 id="outroTitle">Mission Complete! ✈️</h1>
+        <p id="outroSub">Amazing job! The panda is flying home! 🐼✈️🦘</p>
+      </div>
+      <div class="outro-coins" id="outroCoins">🪙 0 coins!</div>
+      <button class="play-again-btn" onclick="restartGame()">Play Again 🦘</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ╔══════════════════════════════════════════════════════════╗
+// ║              CONFIGURATION – EDIT HERE                  ║
+// ╚══════════════════════════════════════════════════════════╝
+
+// ── OPENING SCREEN ──────────────────────────────────────────
+// Set to the URL/path of your kids' photo, or empty string to hide
+const KIDS_IMAGE_SRC = 'opening-image.png';
+
+// Set to the URL/path of your kids' audio recording, or empty string to hide
+const KIDS_AUDIO_SRC = 'opening-audio.m4a';
+
+// ── OUTRO (ENDING) VIDEO ────────────────────────────────────
+// Set to the URL/path of your Sora video when it's ready, or empty string
+// to keep the classic confetti ending
+const OUTRO_VIDEO_SRC = 'outro-video.mp4';
+
+// ════════════════════════════════════════════════════════════
+
+// ============================================================
+// DATA
+// ============================================================
+const PARTS = [
+  {id:"wings",    nameEn:"Wings",     nameHe:"כנפיים",    emoji:"🪁", price:8},
+  {id:"engine1",  nameEn:"Engine 1",  nameHe:"מנוע 1",    emoji:"⚙️", price:6},
+  {id:"engine2",  nameEn:"Engine 2",  nameHe:"מנוע 2",    emoji:"⚙️", price:6},
+  {id:"body",     nameEn:"Body",      nameHe:"גוף המטוס", emoji:"🛩️", price:10},
+  {id:"tail",     nameEn:"Tail",      nameHe:"זנב",       emoji:"🔺", price:7},
+  {id:"propeller",nameEn:"Propeller", nameHe:"פרופלר",    emoji:"🌀", price:7},
+  {id:"cockpit",  nameEn:"Cockpit",   nameHe:"תא טייס",   emoji:"🕹️", price:9},
+  {id:"wheels",   nameEn:"Wheels",    nameHe:"גלגלים",    emoji:"⭕", price:7},
+];
+
+const WORDS = [
+  {en:"a few",he:"כמה",sentences:[{text:"___ students stayed after school.",blank:"a few"},{text:"She read ___ chapters of the book.",blank:"a few"}]},
+  {en:"a lot",he:"הרבה",sentences:[{text:"There is ___ of snow in Alaska in winter.",blank:"a lot"},{text:"He eats ___ of fruit every day.",blank:"a lot"}]},
+  {en:"about",he:"על, בערך",sentences:[{text:"We read a book ___ astronauts and space.",blank:"about"},{text:"The movie is ___ a girl who finds a lost dog.",blank:"about"}]},
+  {en:"above",he:"מעל",sentences:[{text:"The airplane flew ___ the clouds.",blank:"above"},{text:"The picture is hanging ___ the bed.",blank:"above"}]},
+  {en:"accident",he:"תאונה",sentences:[{text:"The ambulance arrived quickly after the ___.",blank:"accident"},{text:"He broke it by ___ – he didn't mean to.",blank:"accident"}]},
+  {en:"act",he:"לשחק בהצגה",sentences:[{text:"She wants to ___ in the school play.",blank:"act"},{text:"He started to ___ when he was ten years old.",blank:"act"}]},
+  {en:"actor",he:"שחקן",sentences:[{text:"My favorite ___ is funny and kind.",blank:"actor"},{text:"The ___ learned all his lines before the show.",blank:"actor"}]},
+  {en:"add",he:"להוסיף",sentences:[{text:"Please ___ some milk to the cereal.",blank:"add"},{text:"Can you ___ my name to the list?",blank:"add"}]},
+  {en:"address",he:"כתובת",sentences:[{text:"Write your ___ on the envelope before you send it.",blank:"address"},{text:"I don't remember the ___ of her apartment.",blank:"address"}]},
+  {en:"afraid",he:"פוחד",sentences:[{text:"The little boy was ___ of the dark.",blank:"afraid"},{text:"Don't be ___ – the dog is very friendly.",blank:"afraid"}]},
+  {en:"after",he:"אחרי",sentences:[{text:"We can play outside ___ school.",blank:"after"},{text:"___ breakfast, she brushed her teeth.",blank:"after"}]},
+  {en:"afternoon",he:"אחרי הצהריים",sentences:[{text:"We went to the beach in the ___.",blank:"afternoon"},{text:"Every ___ he reads a book in his room.",blank:"afternoon"}]},
+  {en:"again",he:"שוב",sentences:[{text:"Can you say that ___? I didn't hear you.",blank:"again"},{text:"She fell asleep and woke up ___ at 7am.",blank:"again"}]},
+  {en:"age",he:"גיל",sentences:[{text:"At what ___ can you ride a bike alone?",blank:"age"},{text:"My aunt is the same ___ as my teacher.",blank:"age"}]},
+  {en:"air",he:"אוויר",sentences:[{text:"The ___ in the mountains is clean and fresh.",blank:"air"},{text:"Open the window to let some ___ into the room.",blank:"air"}]},
+  {en:"airplane",he:"מטוס",sentences:[{text:"The ___ flew from Israel to Australia.",blank:"airplane"},{text:"I waved at the ___ from the airport.",blank:"airplane"}]},
+  {en:"airport",he:"שדה תעופה",sentences:[{text:"We arrived at the ___ two hours before the flight.",blank:"airport"},{text:"The ___ was very busy on the holiday.",blank:"airport"}]},
+  {en:"all",he:"כל, הכל",sentences:[{text:"___ the students did their homework.",blank:"all"},{text:"She ate ___ the apples in the bowl.",blank:"all"}]},
+  {en:"alligator",he:"תנין אמריקאי",sentences:[{text:"The ___ lives near rivers and lakes.",blank:"alligator"},{text:"We saw an ___ at the zoo.",blank:"alligator"}]},
+  {en:"alone",he:"לבד",sentences:[{text:"She was ___ in the house while her parents were at work.",blank:"alone"},{text:"He felt ___ because all his friends were away.",blank:"alone"}]},
+  {en:"already",he:"כבר",sentences:[{text:"I ___ finished my homework, so I can play.",blank:"already"},{text:"By the time we arrived, the movie had ___ started.",blank:"already"}]},
+  {en:"also",he:"גם",sentences:[{text:"She can sing, and she can ___ play the guitar.",blank:"also"},{text:"I like basketball, and I ___ enjoy swimming.",blank:"also"}]},
+  {en:"always",he:"תמיד",sentences:[{text:"He ___ says good morning to his teacher.",blank:"always"},{text:"My dog ___ waits for me by the door.",blank:"always"}]},
+  {en:"amazing",he:"מדהים",sentences:[{text:"The view from the mountain was ___.",blank:"amazing"},{text:"She did an ___ job on her art project.",blank:"amazing"}]},
+  {en:"ambulance",he:"אמבולנס",sentences:[{text:"The ___ rushed to the accident to help.",blank:"ambulance"},{text:"When someone is hurt, call an ___ right away.",blank:"ambulance"}]},
+  {en:"angry",he:"כועס",sentences:[{text:"He was ___ because someone took his bag.",blank:"angry"},{text:"Try to calm down when you feel ___.",blank:"angry"}]},
+  {en:"animal",he:"חיה",sentences:[{text:"My favorite ___ is the dolphin.",blank:"animal"},{text:"The zoo has ___s from all over the world.",blank:"animal"}]},
+  {en:"another",he:"נוסף, אחר",sentences:[{text:"Can I have ___ piece of bread, please?",blank:"another"},{text:"I didn't like this book, so I chose ___ one.",blank:"another"}]},
+  {en:"answer",he:"תשובה / לענות",sentences:[{text:"Do you know the ___ to this question?",blank:"answer"},{text:"Please ___ the phone – it might be important.",blank:"answer"}]},
+  {en:"any",he:"כלשהו",sentences:[{text:"Do you have ___ questions?",blank:"any"},{text:"She didn't have ___ money to buy the apple.",blank:"any"}]},
+  {en:"anyone",he:"מישהו / אף אחד",sentences:[{text:"Is ___ home?",blank:"anyone"},{text:"She didn't tell ___ about her secret plan.",blank:"anyone"}]},
+  {en:"anything",he:"משהו / כלום",sentences:[{text:"Would you like ___ to eat?",blank:"anything"},{text:"He was so tired he couldn't do ___.",blank:"anything"}]},
+  {en:"apartment",he:"דירה",sentences:[{text:"They live in a big ___ in the city.",blank:"apartment"},{text:"Our new ___ has three bedrooms.",blank:"apartment"}]},
+  {en:"apple",he:"תפוח",sentences:[{text:"She packed an ___ and a banana in her bag.",blank:"apple"},{text:"The ___ tree in our garden is full of fruit.",blank:"apple"}]},
+  {en:"arm",he:"זרוע / יד",sentences:[{text:"He hurt his ___ when he fell off his bike.",blank:"arm"},{text:"She carried the baby in her ___s.",blank:"arm"}]},
+  {en:"army",he:"צבא",sentences:[{text:"The ___ helped people after the flood.",blank:"army"},{text:"My uncle served in the ___ for three years.",blank:"army"}]},
+  {en:"around",he:"מסביב",sentences:[{text:"The children sat ___ the campfire.",blank:"around"},{text:"We walked ___ the park and enjoyed the fresh air.",blank:"around"}]},
+  {en:"arrive",he:"להגיע",sentences:[{text:"What time does the bus ___ at school?",blank:"arrive"},{text:"We will ___ at the airport at 6 in the morning.",blank:"arrive"}]},
+  {en:"art",he:"אמנות",sentences:[{text:"She loves ___ and draws every day.",blank:"art"},{text:"The museum had amazing ___ from ancient times.",blank:"art"}]},
+  {en:"artist",he:"אמן",sentences:[{text:"The ___ painted a beautiful picture of the sea.",blank:"artist"},{text:"She wants to be an ___ when she grows up.",blank:"artist"}]},
+  {en:"ask",he:"לשאול / לבקש",sentences:[{text:"Don't be afraid to ___ your teacher for help.",blank:"ask"},{text:"She ___ed her mom if she could go to the party.",blank:"ask"}]},
+  {en:"astronaut",he:"אסטרונאוט",sentences:[{text:"The ___ floated in space for six months.",blank:"astronaut"},{text:"She wants to be an ___ and visit the moon.",blank:"astronaut"}]},
+  {en:"ate",he:"אכל (עבר)",sentences:[{text:"She ___ all the avocado on her toast.",blank:"ate"},{text:"The dog ___ its food very quickly.",blank:"ate"}]},
+  {en:"aunt",he:"דודה",sentences:[{text:"My ___ baked a chocolate cake for my birthday.",blank:"aunt"},{text:"She visits her ___ every summer in Australia.",blank:"aunt"}]},
+  {en:"Australia",he:"אוסטרליה",sentences:[{text:"Kangaroos live in ___.",blank:"Australia"},{text:"My friend moved to ___ and now speaks English all day.",blank:"Australia"}]},
+  {en:"avocado",he:"אבוקדו",sentences:[{text:"She put ___ on her toast for breakfast.",blank:"avocado"},{text:"___ is a healthy fruit that grows in warm places.",blank:"avocado"}]},
+  {en:"awake",he:"ער",sentences:[{text:"He was still ___ at midnight reading his book.",blank:"awake"},{text:"The loud noise kept her ___ all night.",blank:"awake"}]},
+  {en:"away",he:"הרחק",sentences:[{text:"Please put your toys ___ before dinner.",blank:"away"},{text:"She lives far ___, so we talk on the phone.",blank:"away"}]},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  rooName: 'Wende',
+  coins: 0,
+  ownedParts: [],
+  currentQ: null,
+  tries: 0,
+  questionsAnswered: 0,
+  totalQuestions: 70,
+  locked: false,
+};
+
+// Audio state
+let kidsAudio = null;
+
+// ============================================================
+// OPENING SCREEN (NEW)
+// ============================================================
+function initOpeningScreen() {
+  // Image
+  if (KIDS_IMAGE_SRC) {
+    const wrap = document.querySelector('.opening-image-wrap');
+    const placeholder = document.getElementById('kidsImagePlaceholder');
+    placeholder.classList.add('hidden');
+    const img = document.createElement('img');
+    img.src = KIDS_IMAGE_SRC;
+    img.alt = 'Kids recording';
+    wrap.appendChild(img);
+  }
+
+  // Audio – autoplay, auto-advance to game on ended
+  if (KIDS_AUDIO_SRC) {
+    kidsAudio = new Audio(KIDS_AUDIO_SRC);
+    kidsAudio.addEventListener('timeupdate', () => {
+      const pct = kidsAudio.duration ? (kidsAudio.currentTime / kidsAudio.duration) * 100 : 0;
+      document.getElementById('audioProgressFill').style.width = pct + '%';
+      // update play button state
+      const btn = document.getElementById('audioPlayBtn');
+      if (btn) { btn.textContent = '⏸️'; btn.classList.add('playing'); }
+    });
+    kidsAudio.addEventListener('ended', () => {
+      // Auto-advance to intro/game
+      goToIntro();
+    });
+    // Autoplay after a short delay
+    setTimeout(() => {
+      kidsAudio.play().catch(() => {
+        // Autoplay blocked – show manual play button
+        const btn = document.getElementById('audioPlayBtn');
+        if (btn) { btn.textContent = '▶️'; btn.classList.remove('playing'); }
+        const cd = document.getElementById('openingCountdown');
+        if (cd) cd.textContent = '▶️ לחץ להתחיל את ההקלטה';
+      });
+    }, 400);
+  } else {
+    document.getElementById('audioPlayerWrap').classList.add('hidden');
+    document.getElementById('audioPlaceholder').classList.remove('hidden');
+  }
+}
+
+function toggleAudio() {
+  if (!kidsAudio) return;
+  const btn = document.getElementById('audioPlayBtn');
+  if (kidsAudio.paused) {
+    kidsAudio.play();
+    btn.textContent = '⏸️';
+    btn.classList.add('playing');
+  } else {
+    kidsAudio.pause();
+    btn.textContent = '▶️';
+    btn.classList.remove('playing');
+  }
+}
+
+function startOpening() {
+  const name = document.getElementById('rooName').value.trim() || 'Wende';
+  state.rooName = name;
+  document.getElementById('rooNameSpan').textContent = name;
+  initOpeningScreen();
+  renderBottomBar('partsBar');
+  renderBottomBar('shopPartsBar');
+  renderShop();
+  showScreen('openingScreen');
+}
+
+function goToIntro() {
+  if (kidsAudio && !kidsAudio.paused) { kidsAudio.pause(); }
+  showScreen('introScreen');
+  runIntroSequence();
+}
+
+// ============================================================
+// INTRO
+// ============================================================
+document.getElementById('rooName').addEventListener('keydown', e => { if(e.key==='Enter') startOpening(); });
+
+function runIntroSequence() {
+  const steps = [
+    {id:'bubble1', delay:600},
+    {id:'bubble2', delay:2200},
+    {id:'bubble3', delay:3800},
+    {id:'bubble4', delay:5800},
+    {id:'partsPreview', delay:7600},
+  ];
+  steps.forEach(s => {
+    setTimeout(() => {
+      const el = document.getElementById(s.id);
+      if(el) el.classList.add('show');
+      const enEl = el && el.querySelector('.en');
+      if(enEl) speak(enEl.innerText);
+    }, s.delay);
+  });
+  setTimeout(() => goToGame(), 10500);
+}
+
+function speak(text) {
+  if(!window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = 0.9;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function goToGame() {
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  showScreen('gameScreen');
+  if(!state.currentQ) nextQuestion();
+}
+
+function goToShop() { renderShop(); showScreen('shopScreen'); }
+
+// ============================================================
+// SCREENS
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ============================================================
+// GAME
+// ============================================================
+function nextQuestion() {
+  if(state.questionsAnswered >= state.totalQuestions) { showOutro(); return; }
+  state.locked = false; state.tries = 0;
+  state.currentQ = generateQuestion();
+  renderQuestion(state.currentQ);
+  updateProgress();
+  updateCoins();
+}
+
+function generateQuestion() {
+  const type = Math.floor(Math.random()*3);
+  const idx = Math.floor(Math.random()*WORDS.length);
+  const word = WORDS[idx];
+  const wrongPool = shuffle(WORDS.filter((_,i)=>i!==idx)).slice(0,3);
+
+  if(type===0) {
+    return {type:0, question:word.he, options:shuffle([word,...wrongPool]).map(w=>({label:w.en,correct:w===word})), word};
+  } else if(type===1) {
+    return {type:1, question:word.en, options:shuffle([word,...wrongPool]).map(w=>({label:w.he,correct:w===word})), word};
+  } else {
+    const sents = word.sentences||[];
+    const sent = sents[Math.floor(Math.random()*sents.length)] || {text:'___ – translate this word.',blank:word.en};
+    return {type:2, sentence:sent, options:shuffle([word,...wrongPool]).map(w=>({label:w.en,correct:w===word})), word};
+  }
+}
+
+function renderQuestion(q) {
+  const badge = document.getElementById('qTypeBadge');
+  const qWord = document.getElementById('qWord');
+  const qSent = document.getElementById('qSentence');
+  const grid  = document.getElementById('answersGrid');
+  const fb    = document.getElementById('feedbackMsg');
+  const tries = document.getElementById('qTries');
+
+  fb.textContent=''; fb.className='feedback-msg';
+  tries.innerHTML='<span>❤️</span><span>❤️</span>';
+
+  qWord.classList.add('hidden');
+  qSent.classList.add('hidden');
+
+  if(q.type===0) {
+    badge.textContent='Hebrew → English'; badge.style.background='#9B59B6';
+    qWord.textContent=q.question; qWord.classList.remove('hidden');
+  } else if(q.type===1) {
+    badge.textContent='English → Hebrew'; badge.style.background='#2D7DD2';
+    qWord.textContent=q.question; qWord.classList.remove('hidden');
+  } else {
+    badge.textContent='Complete the sentence'; badge.style.background='#E67E22';
+    const parts = q.sentence.text.split('___');
+    qSent.innerHTML = parts[0]+'<span class="q-blank"></span>'+(parts[1]||'');
+    qSent.classList.remove('hidden');
+  }
+
+  grid.innerHTML='';
+  q.options.forEach((opt,i) => {
+    const btn = document.createElement('button');
+    btn.className='ans-btn'; btn.textContent=opt.label;
+    btn.onclick=()=>handleAnswer(opt.correct,btn,i);
+    grid.appendChild(btn);
+  });
+}
+
+function handleAnswer(isCorrect, btn, idx) {
+  if(state.locked) return;
+  const btns = document.getElementById('answersGrid').querySelectorAll('.ans-btn');
+  const fb = document.getElementById('feedbackMsg');
+  const triesEl = document.getElementById('qTries');
+
+  if(isCorrect) {
+    btn.classList.add('correct');
+    state.locked=true;
+    const earned = state.tries===0?2:1;
+    addCoins(earned, btn);
+    fb.textContent = state.tries===0?'🌟 Perfect! +2 coins!':'✅ Correct! +1 coin';
+    fb.className='feedback-msg correct';
+    btns.forEach(b=>b.disabled=true);
+    state.questionsAnswered++;
+    setTimeout(nextQuestion, 1200);
+  } else {
+    btn.classList.add('wrong'); btn.disabled=true;
+    state.tries++;
+    const hearts=triesEl.querySelectorAll('span');
+    if(hearts.length>0) hearts[hearts.length-1].remove();
+    if(state.tries>=2) {
+      state.locked=true;
+      btns.forEach((b,i)=>{ b.disabled=true; if(state.currentQ.options[i].correct) b.classList.add('reveal'); });
+      fb.textContent='😅 Keep going!'; fb.className='feedback-msg neutral';
+      state.questionsAnswered++;
+      setTimeout(nextQuestion,1600);
+    } else {
+      fb.textContent='❌ Try again!'; fb.className='feedback-msg wrong';
+    }
+  }
+}
+
+function updateProgress() {
+  const pct=(state.questionsAnswered/state.totalQuestions)*100;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent='Question '+(state.questionsAnswered+1);
+  document.getElementById('progressCount').textContent=state.questionsAnswered+' / '+state.totalQuestions;
+}
+
+// ============================================================
+// COINS
+// ============================================================
+function addCoins(n, refEl) {
+  state.coins+=n; updateCoins();
+  const popup=document.createElement('div');
+  popup.className='coin-popup'; popup.textContent='+'+n+' 🪙';
+  const r=refEl.getBoundingClientRect();
+  popup.style.left=r.left+'px'; popup.style.top=r.top+'px';
+  document.body.appendChild(popup);
+  setTimeout(()=>popup.remove(),1300);
+}
+
+function updateCoins() {
+  ['coinCount','shopCoinCount','shopBottomCoin'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=state.coins;
+  });
+}
+
+// ============================================================
+// SHOP & PARTS
+// ============================================================
+function renderBottomBar(containerId) {
+  const bar=document.getElementById(containerId);
+  if(!bar) return;
+  bar.innerHTML='';
+  PARTS.forEach(part=>{
+    const owned=state.ownedParts.includes(part.id);
+    const div=document.createElement('div');
+    div.className='part-item'+(owned?' owned':'');
+    div.id=containerId+'_'+part.id;
+    div.innerHTML='<div class="part-emoji">'+part.emoji+'</div><div class="part-name">'+part.nameEn+'</div>';
+    bar.appendChild(div);
+  });
+}
+
+function renderShop() {
+  const grid=document.getElementById('shopGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  PARTS.forEach(part=>{
+    const owned=state.ownedParts.includes(part.id);
+    const canAfford=state.coins>=part.price;
+    const div=document.createElement('div');
+    div.className='shop-item'+(owned?' owned':'');
+    div.innerHTML=`
+      <div class="item-emoji">${part.emoji}</div>
+      <div class="item-en">${part.nameEn}</div>
+      <div class="item-he">${part.nameHe}</div>
+      <div class="item-price">🪙 ${part.price}</div>
+      ${owned
+        ?'<div class="owned-badge">✅ Owned!</div>'
+        :`<button class="buy-btn" ${canAfford?'':' disabled'} onclick="buyPart('${part.id}',${part.price})">Buy</button>`}
+    `;
+    grid.appendChild(div);
+  });
+  renderBottomBar('shopPartsBar');
+}
+
+function buyPart(partId, price) {
+  if(state.coins<price||state.ownedParts.includes(partId)) return;
+  state.coins-=price;
+  state.ownedParts.push(partId);
+  updateCoins();
+  renderShop();
+  ['partsBar','shopPartsBar'].forEach(barId=>{
+    const el=document.getElementById(barId+'_'+partId);
+    if(el) { el.classList.add('owned','just-bought'); setTimeout(()=>el.classList.remove('just-bought'),600); }
+    const emoji=el&&el.querySelector('.part-emoji');
+    if(emoji) emoji.style.filter='none';
+    const name=el&&el.querySelector('.part-name');
+    if(name) name.style.color='var(--gold)';
+  });
+  if(state.ownedParts.length===PARTS.length) setTimeout(()=>showOutro(),800);
+}
+
+// ============================================================
+// OUTRO (updated)
+// ============================================================
+function showOutro() {
+  const coinsText = '🪙 ' + state.coins + ' coins collected!';
+  const subText = `Great job, ${state.rooName}! The panda is flying home! 🐼🦘`;
+
+  if (OUTRO_VIDEO_SRC) {
+    // ── Video ending ──
+    document.getElementById('outroClassic').classList.add('hidden');
+    const wrap = document.getElementById('outroVideoWrap');
+    wrap.classList.remove('hidden');
+    const video = document.getElementById('outroVideo');
+    video.src = OUTRO_VIDEO_SRC;
+    video.play().catch(()=>{}); // autoplay fallback
+    document.getElementById('outroCoinsVideo').innerHTML = coinsText;
+  } else {
+    // ── Classic confetti ending ──
+    document.getElementById('outroVideoWrap').classList.add('hidden');
+    document.getElementById('outroClassic').classList.remove('hidden');
+    document.getElementById('outroTitle').textContent = 'Mission Complete! ✈️';
+    document.getElementById('outroSub').textContent = subText;
+    document.getElementById('outroCoins').innerHTML = coinsText;
+    spawnConfetti();
+  }
+
+  showScreen('outroScreen');
+}
+
+function spawnConfetti() {
+  const colors=['#FF6B2B','#FFD700','#4CAF50','#2D7DD2','#E91E63','#9C27B0'];
+  const scene=document.getElementById('outroScene');
+  for(let i=0;i<70;i++) {
+    const c=document.createElement('div');
+    c.className='confetti-piece';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration=(2+Math.random()*3)+'s';
+    c.style.animationDelay=(Math.random()*2)+'s';
+    c.style.width=(6+Math.random()*10)+'px';
+    c.style.height=(6+Math.random()*10)+'px';
+    scene.appendChild(c);
+  }
+}
+
+function restartGame() {
+  state={rooName:state.rooName,coins:0,ownedParts:[],currentQ:null,tries:0,questionsAnswered:0,totalQuestions:70,locked:false};
+  updateCoins(); renderBottomBar('partsBar'); renderBottomBar('shopPartsBar');
+  showScreen('nameScreen');
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+</script>
+</body>
+</html>
